@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
 import 'models/tarefa.dart';
 import 'providers/tarefa_provider.dart';
 
 void main() {
+  if (kIsWeb) {
+    databaseFactory = databaseFactoryFfiWeb;
+  }
+
   runApp(
     ChangeNotifierProvider(
       create: (context) =>
@@ -82,7 +89,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // EXERCÍCIO 03
   void _exibirDialogEditarTarefa(
     BuildContext context,
     Tarefa tarefa,
@@ -162,7 +168,6 @@ class HomeScreen extends StatelessWidget {
 
           return Column(
             children: [
-              // EXERCÍCIO 01
               Container(
                 width: double.infinity,
                 padding:
@@ -184,64 +189,53 @@ class HomeScreen extends StatelessWidget {
 
               const SizedBox(height: 10),
 
-              // EXERCÍCIO 02
               Padding(
                 padding:
                     const EdgeInsets.symmetric(
                   horizontal: 12,
                 ),
-                child: Row(
+                child: Wrap(
+                  spacing: 8,
                   children: [
-                    Expanded(
-                      child: FilterChip(
-                        label:
-                            const Text('Todas'),
-                        selected:
-                            provider.filtro ==
-                                FiltroTarefa
-                                    .todas,
-                        onSelected: (_) {
-                          provider.alterarFiltro(
-                            FiltroTarefa.todas,
-                          );
-                        },
-                      ),
+                    FilterChip(
+                      label:
+                          const Text('Todas'),
+                      selected:
+                          provider.filtro ==
+                              FiltroTarefa.todas,
+                      onSelected: (_) {
+                        provider.alterarFiltro(
+                          FiltroTarefa.todas,
+                        );
+                      },
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: FilterChip(
-                        label: const Text(
-                          'Pendentes',
-                        ),
-                        selected:
-                            provider.filtro ==
-                                FiltroTarefa
-                                    .pendentes,
-                        onSelected: (_) {
-                          provider.alterarFiltro(
-                            FiltroTarefa
-                                .pendentes,
-                          );
-                        },
-                      ),
+                    FilterChip(
+                      label:
+                          const Text('Pendentes'),
+                      selected:
+                          provider.filtro ==
+                              FiltroTarefa
+                                  .pendentes,
+                      onSelected: (_) {
+                        provider.alterarFiltro(
+                          FiltroTarefa
+                              .pendentes,
+                        );
+                      },
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: FilterChip(
-                        label: const Text(
-                          'Concluídas',
-                        ),
-                        selected:
-                            provider.filtro ==
-                                FiltroTarefa
-                                    .concluidas,
-                        onSelected: (_) {
-                          provider.alterarFiltro(
-                            FiltroTarefa
-                                .concluidas,
-                          );
-                        },
-                      ),
+                    FilterChip(
+                      label:
+                          const Text('Concluídas'),
+                      selected:
+                          provider.filtro ==
+                              FiltroTarefa
+                                  .concluidas,
+                      onSelected: (_) {
+                        provider.alterarFiltro(
+                          FiltroTarefa
+                              .concluidas,
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -255,9 +249,8 @@ class HomeScreen extends StatelessWidget {
                         .isEmpty
                     ? Center(
                         child: Text(
-                          provider
-                                  .totalTarefas ==
-                              0
+                          provider.totalTarefas ==
+                                  0
                               ? 'Nenhuma tarefa cadastrada ainda!'
                               : 'Nenhuma tarefa neste filtro.',
                           style:
@@ -287,8 +280,6 @@ class HomeScreen extends StatelessWidget {
                               horizontal: 12,
                               vertical: 6,
                             ),
-
-                            // EXERCÍCIO 03
                             child: InkWell(
                               onLongPress: () {
                                 _exibirDialogEditarTarefa(

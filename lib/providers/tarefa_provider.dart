@@ -16,14 +16,12 @@ class TarefaProvider extends ChangeNotifier {
 
   FiltroTarefa _filtro = FiltroTarefa.todas;
 
-  List<Tarefa> get tarefas =>
-      List.unmodifiable(_tarefas);
+  List<Tarefa> get tarefas => List.unmodifiable(_tarefas);
 
   bool get isLoading => _isLoading;
 
   FiltroTarefa get filtro => _filtro;
 
-  // EXERCÍCIO 01
   int get totalTarefas => _tarefas.length;
 
   int get totalConcluidas {
@@ -38,7 +36,6 @@ class TarefaProvider extends ChangeNotifier {
         .length;
   }
 
-  // EXERCÍCIO 02
   List<Tarefa> get tarefasFiltradas {
     switch (_filtro) {
       case FiltroTarefa.pendentes:
@@ -65,11 +62,15 @@ class TarefaProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    _tarefas =
-        await DatabaseHelper.instance.queryAll();
-
-    _isLoading = false;
-    notifyListeners();
+    try {
+      _tarefas =
+          await DatabaseHelper.instance.queryAll();
+    } catch (e) {
+      debugPrint('Erro ao carregar tarefas: $e');
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> adicionarTarefa(
@@ -117,7 +118,6 @@ class TarefaProvider extends ChangeNotifier {
     }
   }
 
-  // EXERCÍCIO 03
   Future<void> editarTarefa(
     Tarefa tarefa,
     String novoTitulo,
